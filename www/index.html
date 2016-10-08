@@ -6,72 +6,14 @@
     <meta http-equiv="Content-Security-Policy" content="default-src * data:; style-src * 'unsafe-inline'; script-src * 'unsafe-inline' 'unsafe-eval'">
     <script src="components/loader.js"></script>
     <script src="lib/onsenui/js/onsenui.min.js"></script>
+    <script src='js/util.js'></script>
+    <script src='js/event.js'></script>
     <script src='js/app.js'></script>
 
     <link rel="stylesheet" href="components/loader.css">
     <link rel="stylesheet" href="lib/onsenui/css/onsenui.css">
     <link rel="stylesheet" href="lib/onsenui/css/onsen-css-components.css">
     <link rel="stylesheet" href="css/style.css">
-
-    <script>
-        ons.ready(function() {
-            console.log("Onsen UI is ready!");
-            var button = document.getElementById('push-button');
-            var navigator = document.getElementById('navigator');
-            
-            button.onclick = function(){
-                navigator.pushPage('page2');
-                fetchHistory();
-            }
-            
-            var in_button = document.getElementById('in-button');
-            in_button.onclick = function() {
-                var TestClass = ncmb.DataStore("TestClass");
-                var testClass = new TestClass();
-                t = getTime();
-                testClass.set('date', getDate())
-                         .set("time", getTime())
-                         .set('category', 'in')
-                         .save()
-                         .then(function(object){
-                             var m = t + 'に出勤しました。'
-                             ons.notification.alert({
-                                message: m
-                                });
-                         })
-                         .catch(function(error){});
-            }
-            
-            var out_button = document.getElementById('out-button');
-            out_button.onclick = function() {
-                var TestClass = ncmb.DataStore("TestClass");
-                var testClass = new TestClass();
-                testClass.set('date', getDate())
-                         .set("time", getTime())
-                         .set('category', 'out')
-                         .save()
-                         .then(function(object){
-                             var m = t + 'に退勤しました。'
-                             ons.notification.alert({
-                                message: m
-                                });
-                         })
-                         .catch(function(error){});
-            }
-            
-            var date = new Date();
-            var year = date.getFullYear();
-            var month = date.getMonth();
-            var day = date.getDate();
-            var date_display = document.getElementById('date_display');
-            date_display.innerHTML= year+"年"+month+"月"+day+"日";
-            
-            var hour = date.getHours();
-            var minute = date.getMinutes();
-            time_display.innerHTML = hour + "時" + minute + "分";
-            
-        });
-    </script>
 </head>
 <body>
     <ons-navigator id="navigator" page='page1'></ons-navigator>
@@ -81,12 +23,31 @@
                 <div class='center'>勤怠アプリ</div>
             </ons-toolbar>
             <div>
+                <p>現在の日時</p>
                 <p id='date_display'>現在の日付が入ります</p>
                 <p id="time_display">現在の時間が入ります</p>
             </div>
             <div>
                 <ons-button id="in-button">出勤</ons-button>
                 <ons-button id="out-button">退勤</ons-button>
+            </div>
+            <div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>出勤時刻</th>
+                            <th>退勤時刻</th>
+                        </tr>    
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td id='today_in'></td>
+                            <td id='today_out'></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div>
                 <ons-button id="push-button">履歴へ</ons-button>
             </div>
         </ons-page>
@@ -109,7 +70,7 @@
                             <th>出勤/退勤</th>
                         </tr>    
                     </thead>
-                    <tbody id='history_data'>
+                    <tbody id='all_history'>
                     </tbody>
                 </table>
             </div>
